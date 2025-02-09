@@ -1,73 +1,217 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Microservices API Documentation
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Project Overview
+This project implements a microservices architecture using NestJS and MongoDB, featuring authentication and business logic services. The system uses TCP for inter-service communication and HTTP for external client interactions.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Architecture
 
-## Description
+### Microservices
+1. **Auth Service** (HTTP + TCP Client)
+   - Handles user authentication and registration
+   - Port: 3000 (HTTP)
+   - Exposes public endpoints
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+2. **Business Service** (TCP Only)
+   - Handles user management and business logic
+   - Port: 3001 (TCP)
+   - Internal service, not directly accessible
 
-## Installation
+## Technical Stack
+- **Framework**: NestJS
+- **Database**: MongoDB with Prisma ORM
+- **Authentication**: JWT
+- **Validation**: Zod
+- **Documentation**: Swagger/OpenAPI
+- **Testing**: Jest
+- **Transport**: TCP (inter-service), HTTP (external)
 
-```bash
-$ pnpm install
+## Endpoints
+
+### Auth Service (`localhost:3000`)
+
+#### 1. Register User
+```http
+POST /register
+```
+- **Description**: Register a new user
+- **Auth Required**: No
+- **Request Body**:
+  ```typescript
+  {
+    email: string;    // Valid email format
+    password: string; // Minimum 6 characters
+  }
+  ```
+- **Response**:
+  ```typescript
+  {
+    message: string;
+    userId: string;
+  }
+  ```
+
+#### 2. Login
+```http
+POST /login
+```
+- **Description**: Authenticate user and get JWT token
+- **Auth Required**: No
+- **Request Body**:
+  ```typescript
+  {
+    email: string;
+    password: string;
+  }
+  ```
+- **Response**:
+  ```typescript
+  {
+    token: string; // JWT token
+  }
+  ```
+
+#### 3. List Users
+```http
+GET /users
+```
+- **Description**: Get paginated list of users
+- **Auth Required**: Yes (JWT)
+- **Query Parameters**:
+  ```typescript
+  {
+    page?: number;    // Default: 1
+    limit?: number;   // Default: 10
+    search?: string;  // Optional email search
+  }
+  ```
+- **Response**:
+  ```typescript
+  {
+    users: Array<{
+      id: string;
+      email: string;
+      createdAt: Date;
+      updatedAt: Date;
+    }>;
+    total: number;
+    page: number;
+    totalPages: number;
+  }
+  ```
+
+## Data Models
+
+### User Schema
+```prisma
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 ```
 
-## Running the app
-
-```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+## Project Structure
+```
+api/
+├── apps/
+│   ├── auth/                    # Auth Microservice
+│   │   ├── src/
+│   │   │   ├── dto/
+│   │   │   ├── auth.controller.ts
+│   │   │   ├── auth.service.ts
+│   │   │   └── main.ts
+│   │   └── test/
+│   └── business/               # Business Microservice
+│       ├── src/
+│       │   ├── dto/
+│       │   ├── business.controller.ts
+│       │   ├── business.service.ts
+│       │   └── main.ts
+│       └── test/
+├── libs/
+│   └── common/                 # Shared code
+│       ├── guards/
+│       ├── pipes/
+│       └── services/
+└── prisma/
+    └── schema.prisma
 ```
 
-## Test
+## Testing
+Tests are implemented using Jest and include:
+- Unit tests for controllers and services
+- Integration tests for endpoints
+- Mocked microservice communication
 
+Run tests with:
 ```bash
-# unit tests
-$ pnpm run test
+# Run all tests
+npm run test
 
-# e2e tests
-$ pnpm run test:e2e
+# Run with coverage
+npm run test:cov
 
-# test coverage
-$ pnpm run test:cov
+# Run specific tests
+npm run test apps/auth
+npm run test apps/business
 ```
 
-## Support
+## Configuration
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Environment Variables
+```env
+DATABASE_URL="mongodb://localhost:27017/api"
+JWT_SECRET="your_jwt_secret"
+```
 
-## Stay in touch
+### TypeScript Path Aliases
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "@/apps/*": ["apps/*"],
+      "@/libs/*": ["apps/libs/*"]
+    }
+  }
+}
+```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Running the Project
 
-## License
+1. Get a MongoDB database in Atlas:
 
-Nest is [MIT licensed](LICENSE).
+2. Install dependencies:
+```bash
+pnpm install
+```
+
+3. Generate Prisma client:
+```bash
+pnpm prisma generate
+```
+
+4. Start microservices:
+```bash
+# Start Business Service (TCP)
+pnpm run start:dev business
+
+# Start Auth Service (HTTP)
+pnpm run start:dev auth
+```
+
+## API Documentation
+Swagger documentation is available at:
+```
+http://localhost:3000/docs
+```
+
+## Security Considerations
+- JWT authentication for protected endpoints
+- Password hashing using bcrypt
+- Rate limiting (if implemented)
+- Input validation using Zod
+- Microservices isolation
+
+
