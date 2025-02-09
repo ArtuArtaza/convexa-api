@@ -9,8 +9,7 @@ async function bootstrap() {
     .setTitle('Documentation')
     .setDescription('This is an API using microservices for a technical test ')
     .setVersion('1.0')
-    .addTag('auth', 'Authentication endpoints')
-    .addTag('business', 'Business management endpoints')
+    .addTag('/auth', 'Authentication endpoints')
     .addBearerAuth()
     .build();
 
