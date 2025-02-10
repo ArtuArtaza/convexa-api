@@ -28,4 +28,4 @@ RUN pnpm build
 EXPOSE 3000
 
 # Start application
-CMD ["pm2-runtime", "start", "pm2.config.js"]
+CMD ["pnpm","pm2-runtime", "start", "pm2.config.js"]
