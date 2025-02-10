@@ -28,4 +28,5 @@ RUN pnpm build
 EXPOSE 3000
 
 # Start application
-CMD ["pnpm","pm2-runtime", "start", "pm2.config.js"]
+CMD ["pnpm", "concurrently", "pnpm nest start gateway", "pnpm nest start business"]
+
