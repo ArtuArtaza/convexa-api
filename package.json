@@ -9,7 +9,7 @@
 		"prebuild": "prisma generate",
 		"build": "nest build gateway && nest build auth && nest build business",
 		"format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
-		"start": "pnpm pm2 start pm2.config.js",
+		"start": "nest start && nest start business",
 		"start:dev": "nest start --watch",
 		"start:debug": "nest start --debug --watch",
 		"start:prod": "pnpm pm2 start pm2.config.js",
