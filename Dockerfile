@@ -36,6 +36,8 @@ WORKDIR /app
 # Install pnpm globally using npm
 RUN npm install -g pnpm@latest
 
+RUN npm install -g pm2
+
 # Copy pnpm specific files
 COPY pnpm-lock.yaml ./
 
