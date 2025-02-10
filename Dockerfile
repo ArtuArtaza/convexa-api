@@ -46,10 +46,6 @@ COPY package.json ./
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
     pnpm install --prod --frozen-lockfile
 
-# Copy Prisma client and built application from builder
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/dist ./dist
-
 # Copy prisma schema (needed for migrations)
 COPY prisma ./prisma/
 
