@@ -1,69 +1,31 @@
-# Build stage
-FROM node:18-alpine AS builder
+# Base image
+FROM node:18-alpine
 
-# Set working directory
+# Install pnpm
+RUN npm i -g pnpm@9.14.2
+
+# Create app directory
 WORKDIR /app
 
-# Install pnpm globally using npm
-RUN npm install -g pnpm@latest
+# Copy package files
+# COPY package.json pnpm-lock.yaml ./
 
-# Copy pnpm specific files
-COPY pnpm-lock.yaml ./
-
-# Install dependencies only if package.json changes
-COPY package.json ./
-
-# Install all dependencies (including devDependencies)
-RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile
-
-# Copy prisma schema and generate client
-COPY prisma ./prisma/
-RUN pnpm prisma generate
-
-# Copy the rest of the application
+# Copy application source
 COPY . .
 
-# Build the application
-RUN pnpm run build
+# Install dependencies
+RUN pnpm install
 
-# Production stage
-FROM node:18-alpine AS production
 
-# Set working directory
-WORKDIR /app
 
-# Install pnpm globally using npm
-RUN npm install -g pnpm@latest
+# Generate Prisma Client
+RUN pnpm prisma generate
 
-RUN npm install -g pm2
+# Build application
+RUN pnpm build
 
-# Copy pnpm specific files
-COPY pnpm-lock.yaml ./
-
-# Copy package.json
-COPY package.json ./
-
-# Install production dependencies only
-RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
-    pnpm install --prod --frozen-lockfile
-
-# Copy prisma schema (needed for migrations)
-COPY prisma ./prisma/
-
-# Create a non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nestjs -u 1001 -G nodejs
-
-# Change ownership of the working directory to the non-root user
-RUN chown -R nestjs:nodejs /app
-
-# Switch to non-root user
-USER nestjs
-
-# Expose the port the app runs on
+# Expose port
 EXPOSE 3000
 
-# Start the application using pnpm start:prod
+# Start application
 CMD ["pnpm", "start:prod"]
-

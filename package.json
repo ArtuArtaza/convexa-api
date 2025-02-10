@@ -6,7 +6,7 @@
 	"private": true,
 	"license": "UNLICENSED",
 	"scripts": {
-		"prebuild": "prisma generate",
+		"prebuild": "pnpm prisma generate",
 		"build": "nest build gateway && nest build auth && nest build business",
 		"format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
 		"start": "nest start && nest start business",
