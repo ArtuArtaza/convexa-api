@@ -55,8 +55,9 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'List all users' })
-  @ApiQuery({ name: 'page' })
-  @ApiQuery({ name: 'limit' })
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'limit', required: false })
+  @ApiQuery({ name: 'search', required: false })
   async getUsers(@Query() paginationDto: PaginationDto) {
     return firstValueFrom(
       this.businessClient.send({ cmd: 'get_users' }, paginationDto),
