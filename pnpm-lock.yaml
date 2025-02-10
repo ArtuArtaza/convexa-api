@@ -41,6 +41,9 @@ importers:
       pm2:
         specifier: ^5.4.3
         version: 5.4.3
+      pm2-runtime:
+        specifier: ^5.4.1
+        version: 5.4.1
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -2716,6 +2719,10 @@ packages:
 
   pm2-multimeter@0.1.2:
     resolution: {integrity: sha512-S+wT6XfyKfd7SJIBqRgOctGxaBzUOmVQzTAS+cg04TsEUObJVreha7lvCfX8zzGVr871XwCSnHUU7DQQ5xEsfA==}
+
+  pm2-runtime@5.4.1:
+    resolution: {integrity: sha512-ywzOFlwf1KJHRRq2aqHEid/Qy3YptDlkOAo5dTC1oBo4H5OyDK7CAk3cBMN1AjOdKRSHkHP5DrmWIOeRc7IHPw==}
+    hasBin: true
 
   pm2-sysmonit@1.2.8:
     resolution: {integrity: sha512-ACOhlONEXdCTVwKieBIQLSi2tQZ8eKinhcr9JpZSUAL8Qy0ajIgRtsLxG/lwPOW3JEKqPyw/UaHmTWhUzpP4kA==}
@@ -6531,6 +6538,8 @@ snapshots:
   pm2-multimeter@0.1.2:
     dependencies:
       charm: 0.1.2
+
+  pm2-runtime@5.4.1: {}
 
   pm2-sysmonit@1.2.8:
     dependencies:
