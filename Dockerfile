@@ -4,8 +4,8 @@ FROM node:18-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-# Install pnpm (using corepack for better version management)
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Install pnpm globally using npm
+RUN npm install -g pnpm@latest
 
 # Copy pnpm specific files
 COPY pnpm-lock.yaml ./
@@ -33,13 +33,13 @@ FROM node:18-alpine AS production
 # Set working directory
 WORKDIR /app
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Install pnpm globally using npm
+RUN npm install -g pnpm@latest
 
 # Copy pnpm specific files
 COPY pnpm-lock.yaml ./
 
-# Copy package.json (needed for pnpm start:prod)
+# Copy package.json
 COPY package.json ./
 
 # Install production dependencies only
@@ -68,3 +68,4 @@ EXPOSE 3000
 
 # Start the application using pnpm start:prod
 CMD ["pnpm", "start:prod"]
+
